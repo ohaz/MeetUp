@@ -3,3 +3,12 @@ debug=True
 ip=127.0.0.1
 port=7331
 name=MeetUp
+
+[SQLAlchemy]
+dialect = sqlite
+driver =
+username =
+password =
+host = /meetup.db
+port =
+database =

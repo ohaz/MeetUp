@@ -2,6 +2,7 @@
 .idea/
 
 src/config.ini
+src/*.db*
 
 ### Python template
 # Byte-compiled / optimized / DLL files
