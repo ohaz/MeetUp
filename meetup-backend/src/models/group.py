@@ -1,29 +1,28 @@
-from database import db
-import string, time, math, random
+from application import application
+from models.group_user import group_user_association
+from uuid import uuid4
 
 
-class Group(db.Model):
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50))
-    uid = db.Column(db.String(265))
+class Group(application.db.Model):
+    id = application.db.Column(application.db.Integer, primary_key=True)
+    name = application.db.Column(application.db.String(50))
+    uid = application.db.Column(application.db.String(36))
+    users = application.db.relationship('User', secondary=group_user_association, backref="groups")
 
     def __init__(self, name):
         self.name = name
-        self.uid = unique_id(prefix='G')
+        self.uid = 'G' + uuid4().hex
 
     def __repr__(self):
         return '<Group {} - {}>'.format(self.uid, self.name)
 
+    def __str__(self):
+        return self.uid
 
-def unique_id(prefix: str ='', more_entropy: bool =False):
-    m: float = time.time()
-    unique_id_: str = '%8x%05x' % (int(math.floor(m)), int((m - math.floor(m)) * 1000000))
-    if more_entropy:
-        valid_chars: list = list(set(string.hexdigits.lower()))
-        entropy_string: str = ''
-        for i in range(0, 10, 1):
-            entropy_string += random.choice(valid_chars)
-            unique_id_ = unique_id_ + entropy_string
-            unique_id_ = prefix + unique_id_
-    return unique_id_
+    def to_dict(self):
+        return {'name': self.name, 'uid': self.uid}
+
+    def all(self):
+        d = self.to_dict()
+        d['users'] = [u.to_dict() for u in self.users]
+        return d

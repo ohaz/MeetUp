@@ -8,7 +8,7 @@ import time
 
 
 def main():
-    config = Config('config.ini')
+    config = Config(sys.argv[1])
     application.application = Application(config)
     dialect = config.sqlalchemy['dialect']
     driver = '+' + config.sqlalchemy['driver'] if config.sqlalchemy['driver'] != '' else ''
@@ -22,9 +22,14 @@ def main():
     if config.sqlalchemy['dialect'] == 'sqlite':
         if os.path.exists('.'+host):
             shutil.move('.'+host, '.'+host+'.backup'+str(int(time.time())))
-        from database import db
         from models.group import Group
-        db.session.add(Group('TEST'))
+        from models.user import User
+        db = application.application.db
+        g = Group('TEST')
+        u = User()
+        db.session.add(g)
+        db.session.add(u)
+        g.users.append(u)
         db.create_all()
         db.session.commit()
     else:
